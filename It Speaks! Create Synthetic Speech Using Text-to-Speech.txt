@@ -1,0 +1,3 @@
+gcloud services enable texttospeech.googleapis.com
+gcloud iam service-accounts create tts-qwiklab
+gcloud iam service-accounts keys create tts-qwiklab.json --iam-account tts-qwiklab@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com

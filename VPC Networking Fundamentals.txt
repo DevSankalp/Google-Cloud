@@ -1,0 +1,11 @@
+gcloud compute networks create mynetwork --project=$DEVSHELL_PROJECT_ID --subnet-mode=auto --mtu=1460 --bgp-routing-mode=regional
+gcloud compute instances create mynet-us-vm \
+    --zone= \
+    --machine-type=e2-micro \
+    --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=mynetwork
+
+
+gcloud compute instances create mynet-eu-vm \
+    --zone=europe-west1-b \
+    --machine-type=e2-micro \
+    --network-interface=network-tier=PREMIUM,stack-type=IPV4_ONLY,subnet=mynetwork

@@ -1,0 +1,30 @@
+export PROJECT_ID=$(gcloud config get-value project)
+bq mk --connection --location=US --project_id=$PROJECT_ID \
+    --connection_type=CLOUD_RESOURCE my-connection
+bq show --connection $PROJECT_ID.US.my-connection
+
+
+serviceAccount=
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:${serviceAccount}" \
+      --role='roles/storage.objectViewer'
+
+
+bq mk demo_dataset
+export PROJECT_ID=$(gcloud config get-value project)
+bq mkdef --source_format=CSV --autodetect=true \
+  gs://$PROJECT_ID/customer.csv > mytable_def
+bq mk --table --external_table_definition=mytable_def \
+  demo_dataset.biglake_table
+bq mkdef --source_format=CSV --autodetect=true \
+  gs://$PROJECT_ID/invoice.csv > mytable_deff
+bq mk --table --external_table_definition=mytable_deff \
+  demo_dataset.external_table
+bq mkdef \
+--autodetect \
+--connection_id=$PROJECT_ID.US.my-connection \
+--source_format=CSV \
+"gs://$PROJECT_ID/invoice.csv" > /tmp/tabledef.json
+cat /tmp/tabledef.json
+bq show --schema --format=prettyjson  demo_dataset.external_table > /tmp/schema
+bq update --external_table_definition=/tmp/tabledef.json --schema=/tmp/schema demo_dataset.external_table

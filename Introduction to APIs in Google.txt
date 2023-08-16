@@ -1,0 +1,17 @@
+export OAUTH2_TOKEN=
+export PROJECT_ID=$(gcloud config get-value project)
+export OBJECT=$HOME/demo-image.png
+tee values.json <<EOF
+{  "name": "$PROJECT_ID",
+   "location": "us",
+   "storageClass": "multi_regional"
+}
+EOF
+curl -X POST --data-binary @values.json \
+    -H "Authorization: Bearer $OAUTH2_TOKEN" \
+    -H "Content-Type: application/json" \
+    "https://www.googleapis.com/storage/v1/b?project=$PROJECT_ID"
+curl -X POST --data-binary @$OBJECT \
+    -H "Authorization: Bearer $OAUTH2_TOKEN" \
+    -H "Content-Type: image/png" \
+    "https://www.googleapis.com/upload/storage/v1/b/$PROJECT_ID/o?uploadType=media&name=demo-image"

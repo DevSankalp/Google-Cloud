@@ -1,0 +1,14 @@
+export PROJECT_ID=$(gcloud config get-value project)
+gsutil mb gs://${PROJECT_ID}
+git clone https://github.com/karankk45/karankk45.git
+gsutil cp karankk45/start_station_name.csv gs://${PROJECT_ID}
+gsutil cp karankk45/end_station_name.csv gs://${PROJECT_ID}
+
+
+
+gcloud sql instances create my-demo --database-version=MYSQL_5_7 --cpu=2 --memory=4GB --region= --root-password=password
+gcloud sql connect my-demo --user=root --quiet
+
+password
+
+CREATE DATABASE bike;

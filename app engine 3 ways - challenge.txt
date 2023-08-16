@@ -1,0 +1,8 @@
+gcloud services enable appengine.googleapis.com
+cd hello_world
+gcloud app deploy
+
+
+gcloud compute ssh "lab-setup"
+
+git clone https://github.com/GoogleCloudPlatform/python-docs-samples.git

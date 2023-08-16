@@ -1,0 +1,15 @@
+REGION=us-west1
+ZONE=us-west1-a
+CLUSTER_NAME=qlab
+JOB_TYPE=spark
+JAR=org.apache.spark.examples.SparkPi
+JAR_FILE=file:///usr/lib/spark/examples/jars/spark-examples.jar
+ARGS=1000
+export PROJECT_ID=$(gcloud config get-value project)
+gcloud dataproc clusters create qlab --region $REGION --zone $ZONE --master-machine-type e2-standard-4 --master-boot-disk-size 500 --num-workers 2 --worker-machine-type e2-standard-2 --worker-boot-disk-size 500 --image-version 2.0-debian10 --project $PROJECT_ID
+gcloud dataproc jobs submit spark \
+    --cluster=$CLUSTER_NAME \
+    --region=$REGION \
+    --class=$JAR \
+    --jars=$JAR_FILE \
+    -- 1000

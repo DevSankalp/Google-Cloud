@@ -1,0 +1,9 @@
+export API_KEY=
+gcloud storage buckets create gs://$DEVSHELL_PROJECT_ID-bucket --no-public-access-prevention
+gcloud storage buckets update gs://$DEVSHELL_PROJECT_ID-bucket --no-uniform-bucket-level-access
+curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg --output donuts.png
+gsutil cp donuts.png gs://$DEVSHELL_PROJECT_ID-bucket
+curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg --output selfie.png
+gsutil cp selfie.png gs://$DEVSHELL_PROJECT_ID-bucket
+curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg --output city.png
+gsutil cp city.png gs://$DEVSHELL_PROJECT_ID-bucket

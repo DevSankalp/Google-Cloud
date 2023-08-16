@@ -1,0 +1,11 @@
+gcloud beta compute ssh startup-vm -- -vvv
+
+
+export PROJECT_ID=$(gcloud info --format='value(config.project)')
+export BUCKET_NAME=$PROJECT_ID-dsongcp 
+git clone https://github.com/GoogleCloudPlatform/data-science-on-gcp/
+cd ~/data-science-on-gcp/06_dataproc
+./create_cluster.sh $BUCKET_NAME us-west1
+
+
+

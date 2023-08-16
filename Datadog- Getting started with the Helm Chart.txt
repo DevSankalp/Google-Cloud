@@ -1,0 +1,10 @@
+git clone https://github.com/arapulido/dd-helm-chart-values.git
+helm repo add datadog https://helm.datadoghq.com
+helm repo update
+gcloud container clusters get-credentials datadog-cluster-demo --zone us-central1-a
+export DD_API_KEY=498b4e91cbe1188c913be32deb1faa1c
+helm install datadog --set datadog.apiKey=$DD_API_KEY datadog/datadog -f dd-helm-chart-values/values.yaml --set agents.image.doNotCheckTag=true --set clusterAgent.image.doNotCheckTag=true
+helm upgrade datadog --set datadog.apiKey=$DD_API_KEY datadog/datadog -f dd-helm-chart-values/values-tolerations.yaml --set agents.image.doNotCheckTag=true --set clusterAgent.image.doNotCheckTag=true
+helm upgrade datadog --set datadog.apiKey=$DD_API_KEY datadog/datadog -f dd-helm-chart-values/values-kubelet.yaml --set agents.image.doNotCheckTag=true --set clusterAgent.image.doNotCheckTag=true
+helm upgrade datadog --set datadog.apiKey=$DD_API_KEY datadog/datadog -f dd-helm-chart-values/values-logs.yaml --set agents.image.doNotCheckTag=true --set clusterAgent.image.doNotCheckTag=true
+helm upgrade datadog --set datadog.apiKey=$DD_API_KEY datadog/datadog -f dd-helm-chart-values/values-cluster-agent.yaml --set agents.image.doNotCheckTag=true --set clusterAgent.image.doNotCheckTag=true
