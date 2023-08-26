@@ -1,0 +1,28 @@
+export REGION=us-
+tee > index.js <<EOF
+/**
+ * Responds to any HTTP request.
+ *
+ * @param {!express:Request} req HTTP request context.
+ * @param {!express:Response} res HTTP response context.
+ */
+exports.helloWorld = (req, res) => {
+  let message = req.query.message || req.body.message || 'Hello World!';
+  res.status(200).send(message);
+};
+EOF
+tee > package.json <<EOF
+{
+  "name": "sample-http",
+  "version": "0.0.1"
+}
+EOF
+gcloud functions deploy GCFunction \
+--region=$REGION \
+--runtime=nodejs20 \
+--entry-point=helloWorld \
+--trigger-http
+curl -m 70 -X POST https://$REGION-$DEVSHELL_PROJECT_ID.cloudfunctions.net/GCFunction \
+-H "Authorization: bearer $(gcloud auth print-identity-token)" \
+-H "Content-Type: application/json" \
+-d '{"message":"Hello World!"}'

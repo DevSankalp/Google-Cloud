@@ -1,0 +1,150 @@
+export PROJECT_ID=$(gcloud config get-value project)
+export REGION=us-
+gcloud config set compute/region $REGION
+gcloud services enable \
+  artifactregistry.googleapis.com \
+  cloudfunctions.googleapis.com \
+  cloudbuild.googleapis.com \
+  eventarc.googleapis.com \
+  run.googleapis.com \
+  logging.googleapis.com \
+  pubsub.googleapis.com
+mkdir ~/hello-http
+cd ~/hello-http
+tee > index.js <<EOF
+const functions = require('@google-cloud/functions-framework');
+functions.http('helloWorld', (req, res) => {
+  res.status(200).send('HTTP with Node.js in GCF 2nd gen!');
+});
+EOF
+tee > package.json <<EOF
+{
+  "name": "nodejs-functions-gen2-codelab",
+  "version": "0.0.1",
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^2.0.0"
+  }
+}
+EOF
+PROJECT_NUMBER=$(gcloud projects list --filter="project_id:$PROJECT_ID" --format='value(project_number)')
+SERVICE_ACCOUNT=$(gsutil kms serviceaccount -p $PROJECT_NUMBER)
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member serviceAccount:$SERVICE_ACCOUNT \
+  --role roles/pubsub.publisher
+sleep 120
+gcloud functions deploy nodejs-http-function \
+  --gen2 \
+  --runtime nodejs16 \
+  --entry-point helloWorld \
+  --source . \
+  --region $REGION \
+  --trigger-http \
+  --timeout 600s \
+  --max-instances 1
+gcloud functions call nodejs-http-function \
+  --gen2 --region $REGION
+mkdir ~/hello-storage
+cd ~/hello-storage
+tee > index.js <<EOF
+const functions = require('@google-cloud/functions-framework');
+functions.cloudEvent('helloStorage', (cloudevent) => {
+  console.log('Cloud Storage event with Node.js in GCF 2nd gen!');
+  console.log(cloudevent);
+});
+EOF
+tee > package.json <<EOF
+{
+  "name": "nodejs-functions-gen2-codelab",
+  "version": "0.0.1",
+  "main": "index.js",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^2.0.0"
+  }
+}
+EOF
+BUCKET="gs://gcf-gen2-storage-$PROJECT_ID"
+sleep 120
+gsutil mb -l $REGION $BUCKET
+gcloud functions deploy nodejs-storage-function \
+  --gen2 \
+  --runtime nodejs16 \
+  --entry-point helloStorage \
+  --source . \
+  --region $REGION \
+  --trigger-bucket $BUCKET \
+  --trigger-location $REGION \
+  --max-instances 1
+echo "Hello World" > random.txt
+gsutil cp random.txt $BUCKET/random.txt
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+  --member serviceAccount:$PROJECT_NUMBER-compute@developer.gserviceaccount.com \
+  --role roles/eventarc.eventReceiver
+cd ~
+git clone https://github.com/GoogleCloudPlatform/eventarc-samples.git
+cd ~/eventarc-samples/gce-vm-labeler/gcf/nodejs
+gcloud functions deploy gce-vm-labeler \
+  --gen2 \
+  --runtime nodejs16 \
+  --entry-point labelVmCreation \
+  --source . \
+  --region $REGION \
+  --trigger-event-filters="type=google.cloud.audit.log.v1.written,serviceName=compute.googleapis.com,methodName=beta.compute.instances.insert" \
+  --trigger-location $REGION \
+  --max-instances 1
+gcloud compute instances create my-instance \
+--machine-type=e2-small
+mkdir ~/hello-world-colored && cd $_
+tee > main.py <<EOF
+import os
+color = os.environ.get('COLOR')
+def hello_world(request):
+    return f'<body style="background-color:{color}"><h1>Hello World!</h1></body>'
+EOF
+COLOR=orange
+gcloud functions deploy hello-world-colored \
+  --gen2 \
+  --runtime python39 \
+  --entry-point hello_world \
+  --source . \
+  --region $REGION \
+  --trigger-http \
+  --allow-unauthenticated \
+  --update-env-vars COLOR=$COLOR \
+  --max-instances 1
+mkdir ~/min-instances && cd $_
+tee > main.go <<EOF
+package p
+import (
+        "fmt"
+        "net/http"
+        "time"
+)
+func init() {
+        time.Sleep(10 * time.Second)
+}
+func HelloWorld(w http.ResponseWriter, r *http.Request) {
+        fmt.Fprint(w, "Slow HTTP Go in GCF 2nd gen!")
+}
+EOF
+gcloud functions deploy slow-function \
+  --gen2 \
+  --runtime go116 \
+  --entry-point HelloWorld \
+  --source . \
+  --region $REGION \
+  --trigger-http \
+  --allow-unauthenticated \
+  --max-instances 4
+gcloud functions call slow-function \
+  --gen2 --region $REGION
+gcloud functions deploy slow-concurrent-function \
+  --gen2 \
+  --runtime go116 \
+  --entry-point HelloWorld \
+  --source . \
+  --region $REGION \
+  --trigger-http \
+  --allow-unauthenticated \
+  --min-instances 1 \
+  --max-instances 4

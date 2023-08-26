@@ -1,0 +1,7 @@
+gcloud storage buckets create gs://$DEVSHELL_PROJECT_ID
+gcloud storage buckets create gs://$DEVSHELL_PROJECT_ID-2
+curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg --output demo-image1.png
+curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg --output demo-image2.png
+gsutil cp demo-image1.png demo-image2.png gs://$DEVSHELL_PROJECT_ID
+curl -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "Content-Type: application/json" --data '{"destination": "$DEVSHELL_PROJECT_ID-2"}' "https://storage.googleapis.com/storage/v1/b/$DEVSHELL_PROJECT_ID/o/demo-image1.png/copyTo/b/$DEVSHELL_PROJECT_ID-2/o/demo-image1-copy.png"
+curl -X POST -H "Authorization: Bearer $(gcloud auth print-access-token)" -H "Content-Type: application/json" --data '{"destination": "$DEVSHELL_PROJECT_ID-2"}' "https://storage.googleapis.com/storage/v1/b/$DEVSHELL_PROJECT_ID/o/demo-image2.png/copyTo/b/$DEVSHELL_PROJECT_ID-2/o/demo-image2-copy.png"

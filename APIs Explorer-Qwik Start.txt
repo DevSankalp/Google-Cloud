@@ -1,0 +1,5 @@
+gcloud storage buckets create gs://$DEVSHELL_PROJECT_ID-bucket --no-public-access-prevention
+gcloud storage buckets update gs://$DEVSHELL_PROJECT_ID-bucket --no-uniform-bucket-level-access
+curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg --output demo-image.jpg
+gsutil cp demo-image.jpg gs://$DEVSHELL_PROJECT_ID-bucket
+gcloud storage objects update gs://$DEVSHELL_PROJECT_ID-bucket/demo-image.jpg --add-acl-grant=entity=AllUsers,role=READER

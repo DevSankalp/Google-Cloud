@@ -1,0 +1,27 @@
+export PROJECT_ID=$(gcloud config get-value project)
+gcloud services enable bigqueryconnection.googleapis.com datacatalog.googleapis.com
+bq mk --connection --location=US --project_id=$PROJECT_ID \
+    --connection_type=CLOUD_RESOURCE customer_data_connection
+bq show --connection $PROJECT_ID.US.customer_data_connection
+
+serviceAccount=
+gcloud projects add-iam-policy-binding $PROJECT_ID \
+      --member="serviceAccount:${serviceAccount}" \
+      --role='roles/storage.objectViewer'
+
+export REGION=us-
+bq mk ecommerce
+bq mkdef --source_format=CSV --autodetect=true \
+  gs://$DEVSHELL_PROJECT_ID-bucket/customer-online-sessions.csv > mytable_def
+bq mk --table --external_table_definition=mytable_def \
+  ecommerce.customer_online_sessions
+gcloud data-catalog tag-templates create sensitive_data_template --location=$REGION --field=id=has_sensitive_data,display-name='Has Sensitive Data',type=bool --field=id=sensitive_data_type,display-name='Sensitive Data Type',type='enum(Location Info|Contact Info|None)' --display-name='Sensitive Data Template'
+ENTRY_NAME=$(gcloud data-catalog entries lookup "//bigquery.googleapis.com/projects/${DEVSHELL_PROJECT_ID}/datasets/ecommerce/tables/customer_online_sessions" --format="value(name)")
+cat > tag_file.json << EOF
+  {
+    "has_sensitive_data": true,
+    "sensitive_data_type": "Location Info"
+  }
+EOF
+gcloud data-catalog tags create --entry=${ENTRY_NAME} \
+    --tag-template=sensitive_data_template --tag-template-location=$REGION --tag-file=tag_file.json

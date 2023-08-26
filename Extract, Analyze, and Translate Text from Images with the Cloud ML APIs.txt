@@ -2,6 +2,7 @@ gcloud storage buckets create gs://$DEVSHELL_PROJECT_ID-bucket --no-public-acces
 gcloud storage buckets update gs://$DEVSHELL_PROJECT_ID-bucket --no-uniform-bucket-level-access
 curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg --output sign.jpg
 gsutil cp sign.jpg gs://$DEVSHELL_PROJECT_ID-bucket
+gcloud storage objects update gs://$DEVSHELL_PROJECT_ID-bucket/sign.jpg --add-acl-grant=entity=AllUsers,role=READER
 
 export API_KEY=
 tee ocr-request.json <<EOF
@@ -10,7 +11,7 @@ tee ocr-request.json <<EOF
       {
         "image": {
           "source": {
-              "gcsImageUri": "gs://$DEVHSHELL_PROJECT_ID-bucket/sign.jpg"
+              "gcsImageUri": "gs://$DEVSHELL_PROJECT_ID-bucket/sign.jpg"
           }
         },
         "features": [

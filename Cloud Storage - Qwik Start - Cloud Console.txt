@@ -1,0 +1,6 @@
+export REGION=us-
+gcloud config set compute/region $REGION
+gsutil mb gs://$DEVSHELL_PROJECT_ID
+curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg --output kitten.png
+gsutil cp kitten.png gs://$DEVSHELL_PROJECT_ID
+gcloud storage buckets add-iam-policy-binding gs://$DEVSHELL_PROJECT_ID --member=allUsers --role=roles/storage.objectViewer

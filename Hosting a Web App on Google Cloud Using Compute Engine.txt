@@ -1,5 +1,5 @@
-export REGION=us-central1
-export ZONE=us-central1-f
+export ZONE=us-
+export REGION=us-
 gcloud config set compute/region $REGION
 gcloud services enable compute.googleapis.com
 gsutil mb gs://fancy-store-$DEVSHELL_PROJECT_ID
@@ -8,12 +8,6 @@ cd ~/monolith-to-microservices
 ./setup.sh
 nvm install --lts
 cd microservices
-npm start
-
-
-==========================================================================================================================================
-=======================Follow the task4 and create the startup-script.sh as instructed after doing so, move further=======================
-==========================================================================================================================================
 
 
 gsutil cp ~/monolith-to-microservices/startup-script.sh gs://fancy-store-$DEVSHELL_PROJECT_ID
@@ -25,7 +19,6 @@ gcloud compute instances create backend \
     --machine-type=e2-medium \
     --tags=backend \
    --metadata=startup-script-url=https://storage.googleapis.com/fancy-store-$DEVSHELL_PROJECT_ID/startup-script.sh
-gcloud compute instances list
 
 
 ====================================================================================================================================================================================================================================================================================
@@ -172,6 +165,7 @@ gsutil -m cp -r monolith-to-microservices gs://fancy-store-$DEVSHELL_PROJECT_ID/
 gcloud compute instance-groups managed rolling-action replace fancy-fe-mig \
     --zone=$ZONE \
     --max-unavailable 100%
+sleep 200
 gcloud compute instance-groups managed set-autoscaling \
   fancy-fe-mig \
   --zone=$ZONE \
@@ -186,7 +180,7 @@ gcloud compute backend-services update fancy-fe-frontend \
     --enable-cdn --global
 gcloud compute instances set-machine-type frontend \
   --zone=$ZONE \
-  --machine-type custom-4-3840
+  --machine-type e2-small
 gcloud compute instance-templates create fancy-fe-new \
     --region=$REGION \
     --source-instance=frontend \

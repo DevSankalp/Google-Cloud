@@ -1,6 +1,6 @@
 export API_KEY=
 
-tee request.json <<EOF
+cat > request.json <<EOF
 {
   "requests": [
       {
@@ -23,7 +23,7 @@ curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json 
 curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json  https://vision.googleapis.com/v1/images:annotate?key=${API_KEY} -o text-response.json
 gsutil cp text-response.json gs://$DEVSHELL_PROJECT_ID-bucket
 
-tee request.json <<EOF
+cat > request.json <<EOF
 {
   "requests": [
       {

@@ -1,0 +1,31 @@
+export STORAGE_EDITOR=
+export SERVICE_ACC=
+export CLUSTER=
+gcloud config set compute/zone us-east1-b
+tee > role-definition.yaml <<EOF
+title: "Custom_Securiy_Role"
+description: "Permissions"
+stage: "ALPHA"
+includedPermissions:
+- storage.buckets.get
+- storage.objects.get
+- storage.objects.list
+- storage.objects.update
+- storage.objects.create
+EOF
+gcloud iam roles create $STORAGE_EDITOR --project $DEVSHELL_PROJECT_ID --file role-definition.yaml
+gcloud iam service-accounts create $SERVICE_ACC --display-name "Orca Private Cluster Service Account"
+gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID --member serviceAccount:$SERVICE_ACC@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com --role roles/monitoring.viewer
+gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID --member serviceAccount:$SERVICE_ACC@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com --role roles/monitoring.metricWriter
+gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID --member serviceAccount:$SERVICE_ACC@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com --role roles/logging.logWriter
+gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID --member serviceAccount:$SERVICE_ACC@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com --role projects/$DEVSHELL_PROJECT_ID/roles/$STORAGE_EDITOR
+gcloud container clusters create $CLUSTER --num-nodes 1 --master-ipv4-cidr=172.16.0.64/28 --network orca-build-vpc --subnetwork orca-build-subnet --enable-master-authorized-networks  --master-authorized-networks 192.168.10.2/32 --enable-ip-alias --enable-private-nodes --enable-private-endpoint --service-account $SERVICE_ACC@$DEVSHELL_PROJECT_ID.iam.gserviceaccount.com --zone us-east1-b
+gcloud compute ssh orca-jumphost
+
+
+export CLUSTER=
+gcloud config set compute/zone us-east1-b
+gcloud container clusters get-credentials $CLUSTER --internal-ip
+sudo apt-get install google-cloud-sdk-gke-gcloud-auth-plugin
+kubectl create deployment hello-server --image=gcr.io/google-samples/hello-app:1.0
+kubectl expose deployment hello-server --name orca-hello-service --type LoadBalancer --port 80 --target-port 8080

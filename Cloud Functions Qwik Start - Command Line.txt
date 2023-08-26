@@ -2,7 +2,7 @@ export REGION=
 gcloud config set compute/region $REGION
 mkdir gcf_hello_world
 cd gcf_hello_world
-gsutil mb -p project_id gs://project_id
+gsutil mb -p $DEVSHELL_PROJECT_ID gs://$DEVSHELL_PROJECT_ID
 tee index.js << EOF
 /**
 * Background Cloud Function to be triggered by Pub/Sub.
@@ -19,7 +19,6 @@ const name = pubSubMessage.data
 console.log(`My Cloud Function: ${name}`);
 };
 EOF
-gsutil mb -p $DEVSHELL_PROJECT_ID gs://$DEVSHELL_PROJECT_ID
 gcloud functions deploy helloWorld \
   --stage-bucket $DEVSHELL_PROJECT_ID \
   --trigger-topic hello_world \
