@@ -1,0 +1,11 @@
+export INSTANCE=
+export ZONE=us-
+gcloud compute instances create $INSTANCE --machine-type=e2-medium --zone=$ZONE --tags=http-server,https-server
+gcloud compute ssh $INSTANCE --zone=$ZONE
+
+
+sudo su -
+
+apt-get update
+apt-get install apache2 -y
+service --status-all

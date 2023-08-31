@@ -1,0 +1,12 @@
+export ZONE=us-central1-b
+gcloud compute instances create gcelab --zone $ZONE --machine-type=e2-medium --tags=http-server
+gcloud compute ssh gcelab --zone $ZONE --quiet
+
+
+sudo apt-get update
+sudo apt-get install -y nginx
+ps auwx | grep nginx
+
+
+export ZONE=us-central1-b
+gcloud compute instances create gcelab2 --machine-type e2-medium --zone=$ZONE

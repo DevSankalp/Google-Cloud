@@ -1,0 +1,4 @@
+export ZONE=us-
+curl -LO raw.githubusercontent.com/quiccklabs/Labs_solutions/master/Build%20and%20Deploy%20a%20Docker%20Image%20to%20a%20Kubernetes%20Cluster/quicklabgsp304.sh
+sudo chmod +x quicklabgsp304.sh
+./quicklabgsp304.sh
