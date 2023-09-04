@@ -1,4 +1,4 @@
-
+export ZONE=us-
 gcloud compute instances create gcelab --zone $ZONE
 gcloud compute disks create mydisk --size=200GB \
 --zone $ZONE

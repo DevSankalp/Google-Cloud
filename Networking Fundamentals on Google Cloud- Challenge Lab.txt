@@ -1,5 +1,5 @@
-export REGION=us-east1
-export ZONE=us-east1-d
+export ZONE=us-central1-b
+export REGION="${ZONE%-*}"
 gcloud compute instances create web1 \
 --zone=$ZONE \
 --machine-type=e2-small \
@@ -39,8 +39,8 @@ gcloud compute backend-services add-backend web-backend-service \
 
 
 
-export REGION=us-east1
-export ZONE=us-east1-d
+export ZONE=us-central1-b
+export REGION="${ZONE%-*}"
 gcloud compute instances create web2 \
 --zone=$ZONE \
 --machine-type=e2-small \
@@ -71,8 +71,8 @@ gcloud compute url-maps create web-map-http \
 
 
 
-export REGION=us-east1
-export ZONE=us-east1-d
+export ZONE=us-central1-b
+export REGION="${ZONE%-*}"
 gcloud compute instances create web3 \
 --zone=$ZONE \
 --machine-type=e2-small \
@@ -96,9 +96,8 @@ gcloud compute backend-services create web-backend-service \
 
 
 
-
-export REGION=us-east1
-export ZONE=us-east1-d
+export ZONE=us-central1-b
+export REGION="${ZONE%-*}"
 gcloud compute firewall-rules create www-firewall-network-lb --allow tcp:80 --target-tags network-lb-tag
 gcloud compute addresses create network-lb-ip-1 \
     --region=$REGION  

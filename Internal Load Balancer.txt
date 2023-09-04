@@ -1,5 +1,5 @@
-export REGION=
-export ZONE=
+export ZONE=us-
+export REGION="${ZONE%-*}"
 sudo apt-get install -y virtualenv
 python3 -m venv venv
 source venv/bin/activate
@@ -25,7 +25,7 @@ gcloud compute backend-services add-backend prime-service \
 gcloud compute forwarding-rules create prime-lb \
 --load-balancing-scheme internal \
 --ports 80 --network default \
---region $REGION --address 10.138.10.10 \
+--region $REGION --address 10.142.10.10 \
 --backend-service prime-service
 gcloud compute instances create frontend --zone $ZONE \
 --metadata-from-file startup-script=frontend.sh \

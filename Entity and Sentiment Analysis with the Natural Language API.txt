@@ -1,4 +1,4 @@
-gcloud compute ssh linux-instance --quiet --zone us-central1-c
+gcloud compute ssh linux-instance --quiet --zone us-east4-c
 
 
 export API_KEY=
