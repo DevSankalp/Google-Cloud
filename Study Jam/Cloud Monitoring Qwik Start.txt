@@ -1,0 +1,50 @@
+export ZONE=
+gcloud compute instances create lamp-1-vm \
+--machine-type=e2-medium \
+--zone=$ZONE \
+--tags=http-server
+
+
+gcloud compute ssh --zone "$ZONE" "lamp-1-vm" 
+
+
+sudo apt-get install apache2 php7.0
+
+
+//crate uptime manually
+
+
+cat>> rising-cpu-usage.json <<EOF
+{
+  "displayName": "Inbound Traffic Alert",
+  "userLabels": {},
+  "conditions": [
+    {
+      "displayName": "VM Instance - Network traffic",
+      "conditionThreshold": {
+        "filter": "resource.type = \"gce_instance\" AND metric.type = \"agent.googleapis.com/interface/traffic\"",
+        "aggregations": [
+          {
+            "alignmentPeriod": "300s",
+            "crossSeriesReducer": "REDUCE_NONE",
+            "perSeriesAligner": "ALIGN_RATE"
+          }
+        ],
+        "comparison": "COMPARISON_GT",
+        "duration": "0s",
+        "trigger": {
+          "count": 1
+        },
+        "thresholdValue": 1
+      }
+    }
+  ],
+  "alertStrategy": {
+    "autoClose": "604800s"
+  },
+  "combiner": "OR",
+  "enabled": true,
+  "notificationChannels": []
+}
+EOF
+gcloud alpha monitoring policies create --policy-from-file="rising-cpu-usage.json"

@@ -1,0 +1,22 @@
+export PROJECT_ID=$(gcloud config get-value project)
+gcloud services disable dataflow.googleapis.com
+gcloud services enable dataflow.googleapis.com
+bq mk taxirides
+bq mk \
+--time_partitioning_field timestamp \
+--schema ride_id:string,point_idx:integer,latitude:float,longitude:float,\
+timestamp:timestamp,meter_reading:float,meter_increment:float,ride_status:string,\
+passenger_count:integer -t taxirides.realtime
+gcloud storage buckets create gs://$PROJECT_ID
+
+pip install 'apache-beam[gcp]'==2.42.0
+python -m apache_beam.examples.wordcount --output OUTPUT_FILE
+
+python -m apache_beam.examples.wordcount --project $PROJECT_ID \
+  --runner DataflowRunner \
+  --staging_location gs://$PROJECT_ID/staging \
+  --temp_location gs://$PROJECT_ID/temp \
+  --output gs://$PROJECT_ID/results/output \
+  --region *
+
+repeat above cmd until got tick in check my progress

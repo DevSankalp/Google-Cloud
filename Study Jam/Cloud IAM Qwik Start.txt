@@ -1,0 +1,4 @@
+gsutil mb gs://$DEVSHELL_PROJECT_ID
+curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg --output sample.txt
+gsutil cp sample.txt gs://$DEVSHELL_PROJECT_ID
+gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID --member user: --role roles/storage.objectViewer

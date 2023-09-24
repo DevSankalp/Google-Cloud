@@ -1,0 +1,10 @@
+export BUCKET=
+gcloud storage buckets create gs://$BUCKET
+gcloud pubsub topics create 
+gcloud projects remove-iam-policy-binding $DEVSHELL_PROJECT_ID \
+    --member="user:" \
+    --role="roles/viewer"
+
+
+curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_portrait.jpg/800px-Ada_Lovelace_portrait.jpg --output ada.jpg
+gsutil cp ada.jpg gs://
