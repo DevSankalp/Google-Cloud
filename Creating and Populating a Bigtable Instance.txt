@@ -1,0 +1,14 @@
+ZONE=us-east5-
+gcloud services disable dataflow.googleapis.com
+gcloud services enable dataflow.googleapis.com
+REGION=${ZONE::-2}
+export PROJECT_ID=$(gcloud config list --format 'value(core.project)')
+gcloud bigtable instances create personalized-sales --display-name="Personalized Sales" --cluster-storage-type=SSD --cluster-config=id=personalized-sales-c1,zone=$ZONE
+gcloud bigtable instances tables create UserSessions --instance=personalized-sales --column-families="Interactions","Sales"
+gsutil mb gs://$PROJECT_ID/
+gcloud dataflow jobs run import-usersessions --gcs-location gs://dataflow-templates-$REGION/latest/GCS_SequenceFile_to_Cloud_Bigtable --region $REGION --staging-location gs://$PROJECT_ID/temp --parameters bigtableProject=$PROJECT_ID,bigtableInstanceId=personalized-sales,bigtableTableId=UserSessions,sourcePattern=gs://cloud-training/OCBL377/retail-interactions-sales-00000-of-00001
+echo "https://console.cloud.google.com/dataflow/jobs?referrer=search&project=$PROJECT_ID"
+
+
+gcloud bigtable instances tables delete UserSessions --instance=personalized-sales
+gcloud bigtable instances delete personalized-sales

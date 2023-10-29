@@ -1,0 +1,4 @@
+export REGION=us-
+curl -LO raw.githubusercontent.com/quiccklabs/Labs_solutions/master/Scanning%20User%20generated%20Content%20Using%20the%20Cloud%20Video%20Intelligence%20and%20Cloud%20Vision%20APIs/quicklabgsp138.sh
+sudo chmod +x quicklabgsp138.sh
+./quicklabgsp138.sh

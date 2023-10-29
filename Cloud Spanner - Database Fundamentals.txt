@@ -1,0 +1,35 @@
+export REGION=us-
+gcloud spanner instances create banking-instance \
+--config=regional-$REGION  \
+--description="quicklab_1" \
+--nodes=1
+gcloud spanner databases create banking-db --instance=banking-instance
+gcloud spanner instances create banking-instance-2 \
+--config=regional-$REGION  \
+--description="quicklab_2" \
+--nodes=2
+gcloud spanner databases create banking-db-2 --instance=banking-instance-2
+cat > table.py << EOF
+from google.cloud import spanner
+instance_id = "banking-instance"
+database_id = "banking-db"
+spanner_client = spanner.Client()
+instance = spanner_client.instance(instance_id)
+database = instance.database(database_id)
+operation = database.update_ddl(
+    [
+        """CREATE TABLE Customer (CustomerId STRING(36) NOT NULL,Name STRING(MAX) NOT NULL,Location STRING(MAX) NOT NULL) PRIMARY KEY (CustomerId)"""
+    ]
+)
+
+print("Waiting for operation to complete...")
+
+print(
+    "Created Customer table on database {} on instance {}".format(
+        database_id, instance_id
+    )
+)
+EOF
+python3 table.py
+
+

@@ -1,0 +1,4 @@
+gcloud services enable firestore.googleapis.com
+export PROJECT_ID=$(gcloud config list --format 'value(core.project)')
+gcloud firestore databases create --location=nam5 --type=datastore-mode
+echo "https://console.cloud.google.com/datastore/databases/-default-/entities/new?project=$PROJECT_ID"

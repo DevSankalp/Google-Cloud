@@ -1,0 +1,27 @@
+export REGION=us-
+export USER2=
+gcloud services enable dataplex.googleapis.com
+gsutil mb -l $REGION gs://"$DEVSHELL_PROJECT_ID-bucket"
+gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID --member=user:$USER2 --role=roles/serviceusage.serviceUsageAdmin
+gcloud projects add-iam-policy-binding $DEVSHELL_PROJECT_ID --member=user:$USER2 --role=roles/dataplex.admin
+
+
+export REGION=us-
+gcloud dataplex lakes create lake1 \
+   --location=$REGION \
+   --display-name="Lake1" \
+   --description="Lake1 Domain"
+gcloud dataplex zones create zone1 \
+    --location=$REGION \
+    --lake=lake1 \
+    --display-name="Zone1" \
+    --resource-location-type=SINGLE_REGION \
+    --type=Raw
+gcloud dataplex assets create bucket1 \
+--location=$REGION \
+--lake=lake1 \
+--zone=zone1 \
+--display-name="Bucket1" \
+--resource-type=STORAGE_BUCKET \
+--resource-name=projects/$DEVSHELL_PROJECT_ID/buckets/$DEVSHELL_PROJECT_ID-bucket \
+--discovery-enabled

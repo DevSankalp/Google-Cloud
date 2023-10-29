@@ -1,0 +1,52 @@
+{
+  "title": "prompt",
+  "description": "",
+  "parameters": {
+    "temperature": 0.2,
+    "tokenLimits": 256,
+    "topK": 40,
+    "topP": 0.8
+  },
+  "type": "structured",
+  "context": "",
+  "inputPrefixes": [
+    ""
+  ],
+  "outputPrefixes": [
+    ""
+  ],
+  "examples": [
+    {
+      "inputs": [
+        "A well-made and entertaining film"
+      ],
+      "outputs": [
+        "positive"
+      ]
+    },
+    {
+      "inputs": [
+        "I fell asleep after 10 minutes"
+      ],
+      "outputs": [
+        "negative"
+      ]
+    },
+    {
+      "inputs": [
+        "The movie was ok"
+      ],
+      "outputs": [
+        "neutral"
+      ]
+    }
+  ],
+  "testData": [
+    {
+      "inputs": [
+        "It was a time well spent!"
+      ]
+    }
+  ],
+  "model": "text-bison@001"
+}

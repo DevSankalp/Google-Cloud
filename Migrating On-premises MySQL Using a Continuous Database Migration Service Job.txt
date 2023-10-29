@@ -1,0 +1,42 @@
+ZONE=us-central1-b
+gcloud services enable datamigration.googleapis.com \
+		servicenetworking.googleapis.com
+export PROJECT_ID=$(gcloud config get-value project)
+REGION=${ZONE::-2}
+VM_ZONE=$(gcloud compute instances list --filter="name=dms-mysql-training-vm-v2" --format "get(zone)" | awk -F/ '{print $NF}')
+VM_IP=$(gcloud compute instances describe dms-mysql-training-vm-v2 --zone=$VM_ZONE \
+  --format='get(networkInterfaces[0].networkIP)')
+gcloud database-migration connection-profiles create mysql mysql-vm --region=$REGION --password=changeme \
+--username=admin --display-name=mysql-vm --host=$VM_IP --port=3306
+echo "https://console.cloud.google.com/dbmigration/migrations?referrer=search&authuser=3&project=$PROJECT_ID"
+
+#----CREATE MIGRATION JOB THROUGH CONSOLE----
+
+
+gcloud sql connect mysql-cloudsql --user=root --quiet
+
+supersecret!
+
+
+use customers_data;
+select count(*) from customers;
+select * from customers
+order by lastName
+limit 10;
+exit
+
+
+gcloud beta compute ssh dms-mysql-training-vm-v2 -- -vvv
+
+mysql -u admin -p
+changeme
+
+use customers_data;
+INSERT INTO customers (customerKey, addressKey, title, firstName, lastName, birthdate, gender, maritalStatus, email, creationDate)
+VALUES ('9365552000000-999', '9999999', 'Ms', 'Magna', 'Ablorem', '1953-07-28 00:00:00', 'FEMALE', 'MARRIED', 'magna.lorem@gmail.com', CURRENT_TIMESTAMP),
+('9965552000000-9999', '99999999', 'Mr', 'Arcu', 'Abrisus', '1959-07-28 00:00:00', 'MALE', 'MARRIED', 'arcu.risus@gmail.com', CURRENT_TIMESTAMP);
+exit
+exit
+
+
+gcloud database-migration migration-jobs promote vm-to-cloudsql --region=$REGION

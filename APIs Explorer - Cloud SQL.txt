@@ -1,0 +1,3 @@
+curl -LO raw.githubusercontent.com/quiccklabs/Labs_solutions/master/APIs%20Explorer%20Cloud%20SQL/quicklabgsp423.sh
+sudo chmod +x quicklabgsp423.sh
+./quicklabgsp423.sh

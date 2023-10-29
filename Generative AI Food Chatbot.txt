@@ -1,0 +1,24 @@
+export BUCKET_NAME=$(gcloud config get-value project)
+export DATASET_NAME=
+export TABLE_NAME=
+export TOPIC_NAME=
+export JOB_NAME=
+export REGION=
+gsutil mb gs://$BUCKET_NAME
+bq mk $DATASET_NAME
+bq mk --table \
+$DEVSHEL_PROJECT_ID:$DATASET_NAME.$TABLE_NAME \
+data:string
+gcloud pubsub topics create $TOPIC_NAME
+gcloud pubsub subscriptions create $TOPIC_NAME-sub --topic=$TOPIC_NAME
+
+
+public this message in pub sub
+{"data": "73.4 F"}
+
+
+select * from sen
+
+
+export PROJECT_ID=$(gcloud config get-value project)
+gcloud dataflow jobs run $JOB_NAME --gcs-location gs://dataflow-templates-us-west1/latest/PubSub_to_BigQuery --region us-west1 --staging-location gs://$PROJECT_ID/temp --parameters inputTopic=projects/$PROJECT_ID/topics/$TOPIC_NAME,outputTableSpec=$PROJECT_ID:$DATASET_NAME.$TABLE_NAME
