@@ -1,0 +1,6 @@
+https://www.cloudskillsboost.google/focuses/1075?parent=catalog
+
+
+curl -LO raw.githubusercontent.com/quiccklabs/Labs_solutions/master/App%20Dev%20Storing%20Image%20and%20Video%20Files%20in%20Cloud%20Storage%20Python/quicklabgsp185.sh
+sudo chmod +x quicklabgsp185.sh
+./quicklabgsp185.sh
