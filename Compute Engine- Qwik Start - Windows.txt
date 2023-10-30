@@ -1,4 +1,4 @@
 gcloud compute instances create my-instance \
---image-family windows-2012-r2 --image-project windows-cloud \
+--create-disk=auto-delete=yes,boot=yes,device-name=my-instance,image=projects/windows-cloud/global/images/windows-server-2022-dc-v20231011,mode=rw,size=50 \
 --machine-type=e2-small \
---zone=
+--zone=us-

@@ -4,7 +4,11 @@ curl https://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Ada_Lovelace_port
 gsutil cp sign.jpg gs://$DEVSHELL_PROJECT_ID-bucket
 gcloud storage objects update gs://$DEVSHELL_PROJECT_ID-bucket/sign.jpg --add-acl-grant=entity=AllUsers,role=READER
 
-export API_KEY=
+
+gcloud alpha services api-keys create --display-name="api"
+export api=$(gcloud alpha services api-keys list --format='value(uid)')
+export apikey=$(gcloud alpha services api-keys get-key-string $api --format='value(keyString)')
+export API_KEY=$apikey
 tee ocr-request.json <<EOF
 {
   "requests": [

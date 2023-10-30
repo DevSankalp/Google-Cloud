@@ -1,7 +1,8 @@
 export REGION=us-
 export PROJECT_ID=$(gcloud config get-value project)
 gcloud services enable \
-  dataplex.googleapis.com 
+  dataplex.googleapis.com
+sleep 5
 gcloud alpha dataplex lakes create sensors \
  --location=$REGION
 gcloud dataplex zones create temperature-raw-data \
@@ -18,7 +19,7 @@ gcloud dataplex assets create measurements \
 --display-name="measurements" \
 --resource-type=STORAGE_BUCKET \
 --resource-name=projects/$PROJECT_ID/buckets/$PROJECT_ID
-sleep 20
+sleep 10
 gcloud dataplex assets delete measurements --location=$REGION --zone=temperature-raw-data --lake=sensors
 gcloud dataplex zones delete temperature-raw-data --location=$REGION --lake=sensors
 gcloud dataplex lakes delete sensors --location=$REGION

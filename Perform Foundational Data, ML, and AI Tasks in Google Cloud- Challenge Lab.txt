@@ -1,5 +1,6 @@
+export BUCKET=
 bq mk 
-gsutil mb gs://
+gsutil mb gs://$BUCKET
 gsutil cp gs://cloud-training/gsp323/lab.csv  .
 gsutil cp gs://cloud-training/gsp323/lab.schema .
 cat lab.schema

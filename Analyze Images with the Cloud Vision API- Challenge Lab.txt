@@ -1,5 +1,7 @@
-export API_KEY=
-
+gcloud alpha services api-keys create --display-name="api"
+export api=$(gcloud alpha services api-keys list --format='value(uid)')
+export apikey=$(gcloud alpha services api-keys get-key-string $api --format='value(keyString)')
+export API_KEY=$apikey
 cat > request.json <<EOF
 {
   "requests": [
@@ -19,7 +21,6 @@ cat > request.json <<EOF
   ]
 }
 EOF
-curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json  https://vision.googleapis.com/v1/images:annotate?key=${API_KEY}
 curl -s -X POST -H "Content-Type: application/json" --data-binary @request.json  https://vision.googleapis.com/v1/images:annotate?key=${API_KEY} -o text-response.json
 gsutil cp text-response.json gs://$DEVSHELL_PROJECT_ID-bucket
 
